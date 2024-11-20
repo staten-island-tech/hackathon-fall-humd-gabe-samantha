@@ -86,7 +86,7 @@ def game_loop():
         print(f"Added {note} for {duration} duration.")
 
     # Play the song
-    print("\nPlaying your song...")
+    print("\nPlaying your song...") #MAKES A NEW LINE
     play_song(song)
 
 if __name__ == "__main__":
