@@ -39,9 +39,13 @@ def generate_sound(frequency, duration, sample_rate=22050):
     t = np.linspace(0, duration, num_samples, endpoint=False)  # Time array
     waveform = np.sin(2 * np.pi * frequency * t)  # Sine wave formula
     
-    # Convert to 16-bit PCM format
+    # Convert to 16-bit PCM format (mono)
     audio_data = np.int16(waveform * 32767)  # Scale to int16
-    return audio_data
+    
+    # Convert to stereo by duplicating the mono waveform to both left and right channels
+    stereo_data = np.column_stack((audio_data, audio_data))  # Stack columns for stereo
+    
+    return stereo_data
 
 # Function to play a note for a given duration
 def play_note(note, duration):
@@ -51,6 +55,12 @@ def play_note(note, duration):
 
     frequency = NOTE_FREQS[note]  # Get frequency for the note
     sound_data = generate_sound(frequency, duration)  # Generate sound data
+    
+    # Ensure pygame mixer is initialized before playing the sound
+    if not pygame.mixer.get_init():
+        pygame.mixer.init(frequency=22050, size=-16, channels=2)
+    
+    # Create a pygame sound object from the NumPy array (stereo)
     sound = pygame.sndarray.make_sound(sound_data)  # Create a pygame sound object
     sound.play()  # Play the sound
     time.sleep(duration)  # Wait for the duration of the note
@@ -86,7 +96,7 @@ def game_loop():
         print(f"Added {note} for {duration} duration.")
 
     # Play the song
-    print("\nPlaying your song...") #MAKES A NEW LINE
+    print("\nPlaying your song...")
     play_song(song)
 
 if __name__ == "__main__":
